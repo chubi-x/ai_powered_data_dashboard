@@ -1,1 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Virtual environment
+.venv/
+
+# Django
+db.sqlite3
+*.log
+
+# Environment
+.env
+
+# Raster data
 raster.tif
