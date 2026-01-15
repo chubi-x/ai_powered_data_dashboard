@@ -76,6 +76,16 @@ class CropModule(BaseProjection):
             models.Index(fields=["region", "item", "year"]),
             models.Index(fields=["item", "variable"]),
         ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(item__in=["wht", "ric", "cgr", "osd", "vfn"]),
+                name="cropmodule_valid_item",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(variable__in=["area", "prod", "yild", "cons", "food", "feed", "othu", "expo", "impo", "nett"]),
+                name="cropmodule_valid_variable",
+            ),
+        ]
 
 
 class AnimalModule(BaseProjection):
@@ -109,6 +119,16 @@ class AnimalModule(BaseProjection):
             models.Index(fields=["region", "item", "year"]),
             models.Index(fields=["item", "variable"]),
         ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(item__in=["rum", "nrm", "dry", "grs"]),
+                name="animalmodule_valid_item",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(variable__in=["area", "prod", "yild", "cons", "food", "othu", "expo", "impo", "nett"]),
+                name="animalmodule_valid_variable",
+            ),
+        ]
 
 
 class BioenergyModule(BaseProjection):
@@ -139,6 +159,16 @@ class BioenergyModule(BaseProjection):
             models.Index(fields=["region", "item", "year"]),
             models.Index(fields=["item", "variable"]),
         ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(item__in=["sgc", "pfb"]),
+                name="bioenergymodule_valid_item",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(variable__in=["area", "prod", "yild", "cons", "othu", "expo", "impo", "nett"]),
+                name="bioenergymodule_valid_variable",
+            ),
+        ]
 
 
 class LandCover(BaseProjection):
@@ -163,4 +193,14 @@ class LandCover(BaseProjection):
         ordering = ["region", "item", "year"]
         indexes = [
             models.Index(fields=["region", "item", "year"]),
+        ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(item__in=["crp", "for", "grs", "nld"]),
+                name="landcover_valid_item",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(variable__in=["land"]),
+                name="landcover_valid_variable",
+            ),
         ]
