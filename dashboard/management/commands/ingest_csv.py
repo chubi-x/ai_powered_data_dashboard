@@ -150,6 +150,20 @@ class Command(BaseCommand):
                     stats["skipped"] += 1
                     continue
 
+                # Validate item and variable against model's choices
+                if item not in model_class.ItemChoices.values:
+                    self.stderr.write(
+                        self.style.WARNING(f"Invalid item '{item}' for {model_class.__name__}, skipping")
+                    )
+                    stats["skipped"] += 1
+                    continue
+                if variable not in model_class.VariableChoices.values:
+                    self.stderr.write(
+                        self.style.WARNING(f"Invalid variable '{variable}' for {model_class.__name__}, skipping")
+                    )
+                    stats["skipped"] += 1
+                    continue
+
                 # Get or create region
                 region_code = row["region"]
                 if region_code not in regions:
