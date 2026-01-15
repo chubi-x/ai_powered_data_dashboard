@@ -1,6 +1,8 @@
 django>=5.0
 pandas
 psycopg2-binary
+django-extensions
+ipython
 python-dotenv
 plotly
 django-debug-toolbar

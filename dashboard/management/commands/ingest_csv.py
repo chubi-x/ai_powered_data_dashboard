@@ -21,26 +21,11 @@ from dashboard.models import (
 
 # Map item codes to their target model
 ITEM_TO_MODEL = {
-    # Crop Module
-    "wht": CropModule,
-    "ric": CropModule,
-    "cgr": CropModule,
-    "osd": CropModule,
-    "vfn": CropModule,
-    # Animal Module
-    "rum": AnimalModule,
-    "nrm": AnimalModule,
-    "dry": AnimalModule,
-    "grs": AnimalModule,
-    # Bioenergy Module
-    "sgc": BioenergyModule,
-    "pfb": BioenergyModule,
-    # Land Cover
-    "crp": LandCover,
-    "for": LandCover,
-    "nld": LandCover,
+    **dict.fromkeys(["wht", "ric", "cgr", "osd", "vfn"], CropModule),
+    **dict.fromkeys(["rum", "nrm", "dry", "grs"], AnimalModule),
+    **dict.fromkeys(["sgc", "pfb"], BioenergyModule),
+    **dict.fromkeys(["crp", "for", "nld"], LandCover),
 }
-
 # Region code to full name mapping
 REGION_NAMES = {
     "ame": "Africa & Middle East",
@@ -109,11 +94,8 @@ class Command(BaseCommand):
 
     def _clear_data(self):
         """Clear all projection data."""
-        CropModule.objects.all().delete()
-        AnimalModule.objects.all().delete()
-        BioenergyModule.objects.all().delete()
-        LandCover.objects.all().delete()
-        Region.objects.all().delete()
+        for model in [CropModule, AnimalModule, BioenergyModule, LandCover, Region]:
+            model.objects.all().delete()
 
     def _ingest_csv(self, csv_path: Path) -> dict:
         """Ingest CSV data and return statistics."""
