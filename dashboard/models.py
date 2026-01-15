@@ -36,14 +36,6 @@ class BaseProjection(models.Model):
     class Meta:
         abstract = True
 
-    def clean(self):
-        """Validate item and variable against subclass choices."""
-        super().clean()
-        if self.ItemChoices and self.item not in self.ItemChoices.values:
-            raise ValueError(f"Invalid item '{self.item}' for {self.__class__.__name__}")
-        if self.VariableChoices and self.variable not in self.VariableChoices.values:
-            raise ValueError(f"Invalid variable '{self.variable}' for {self.__class__.__name__}")
-
 
 class CropModule(BaseProjection):
     """
