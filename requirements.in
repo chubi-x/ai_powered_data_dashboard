@@ -1,17 +1,7 @@
-# Django
 django>=5.0
-
-# Database
+pandas
 psycopg2-binary
-
-# Environment
 python-dotenv
-
-# Charts
 plotly
-
-# AI/LLM
 google-generativeai
-
-# Dev
 django-debug-toolbar
