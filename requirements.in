@@ -3,5 +3,4 @@ pandas
 psycopg2-binary
 python-dotenv
 plotly
-google-generativeai
 django-debug-toolbar
