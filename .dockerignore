@@ -1,0 +1,16 @@
+.venv/
+.git/
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+db.sqlite3
+*.log
+raster.tif
+raster_data/*.tif
+*.md
+.dockerignore
+Dockerfile
+docker-compose.yml

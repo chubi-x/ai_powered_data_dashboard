@@ -16,3 +16,4 @@ db.sqlite3
 
 # Raster data
 raster.tif
+raster_data/*.tif
