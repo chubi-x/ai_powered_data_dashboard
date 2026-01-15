@@ -20,6 +20,12 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Django Shell Plus for IPython configuration
+try:
+    import IPython
+    SHELL_PLUS = "ipython"
+except ImportError:
+    SHELL_PLUS = "plain"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -36,6 +42,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
+    "django_extensions",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
