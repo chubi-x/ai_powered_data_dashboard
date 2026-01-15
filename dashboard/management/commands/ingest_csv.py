@@ -20,12 +20,29 @@ from dashboard.models import (
 )
 
 # Map item codes to their target model
+# Note: "grs" is handled specially in _get_model_for_row() since it can be
+# either AnimalModule (grazing area) or LandCover (land classification)
 ITEM_TO_MODEL = {
     **dict.fromkeys(["wht", "ric", "cgr", "osd", "vfn"], CropModule),
-    **dict.fromkeys(["rum", "nrm", "dry", "grs"], AnimalModule),
+    **dict.fromkeys(["rum", "nrm", "dry"], AnimalModule),
     **dict.fromkeys(["sgc", "pfb"], BioenergyModule),
     **dict.fromkeys(["crp", "for", "nld"], LandCover),
 }
+
+
+def _get_model_for_row(item: str, variable: str):
+    """
+    Determine target model based on item and variable.
+
+    Most items map directly to a single model, but 'grs' (grassland) is special:
+    - variable='land' -> LandCover (total grassland area as land classification)
+    - variable='area' -> AnimalModule (grazing area for livestock)
+    """
+    if item == "grs":
+        return LandCover if variable == "land" else AnimalModule
+    return ITEM_TO_MODEL.get(item)
+
+
 # Region code to full name mapping
 REGION_NAMES = {
     "ame": "Africa & Middle East",
@@ -126,7 +143,8 @@ class Command(BaseCommand):
 
             for row in reader:
                 item = row["item"]
-                model_class = ITEM_TO_MODEL.get(item)
+                variable = row["variable"]
+                model_class = _get_model_for_row(item, variable)
 
                 if model_class is None:
                     stats["skipped"] += 1
@@ -162,7 +180,7 @@ class Command(BaseCommand):
                     value=value,
                     unit=unit,
                     item=item,
-                    variable=row["variable"],
+                    variable=variable,
                 )
 
                 batches[model_class].append(obj)
