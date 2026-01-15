@@ -2,7 +2,7 @@ services:
   web:
     build: .
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - .:/app
     env_file:
@@ -23,25 +23,21 @@ services:
     env_file:
       - .env
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  geoserver:
-    image: kartoza/geoserver:2.24.0
+  titiler:
+    image: ghcr.io/developmentseed/titiler:latest
     ports:
       - "8080:8080"
     volumes:
-      - geoserver_data:/opt/geoserver/data_dir
-      - ./raster_data:/opt/geoserver/data_dir/raster_data
-    env_file:
-      - .env
-    depends_on:
-      - db
+      - ./raster_data:/data
+    environment:
+      - TITILER_API_ROOT_PATH=/
 
 volumes:
   postgres_data:
-  geoserver_data:
