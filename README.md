@@ -66,7 +66,7 @@ A Django-based data dashboard featuring agricultural projections visualization, 
 
 Load the CSV data into the database:
 ```bash
-python manage.py load_csv
+python manage.py ingest_csv
 ```
 
 ### Raster Setup
