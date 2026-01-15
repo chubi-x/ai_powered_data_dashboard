@@ -37,7 +37,9 @@ class BaseProjection(models.Model):
         abstract = True
 
     def __str__(self):
-        return f"{self.region.code} - {self.item} - {self.variable} ({self.year})"
+        item_label = self.ItemChoices(self.item).label if self.ItemChoices else self.item
+        variable_label = self.VariableChoices(self.variable).label if self.VariableChoices else self.variable
+        return f"{self.region.name} - {item_label} {variable_label} ({self.year})"
 
 
 class CropModule(BaseProjection):
