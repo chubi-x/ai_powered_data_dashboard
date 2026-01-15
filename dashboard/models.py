@@ -36,6 +36,9 @@ class BaseProjection(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return f"{self.region.code} - {self.item} - {self.variable} ({self.year})"
+
 
 class CropModule(BaseProjection):
     """
@@ -72,9 +75,6 @@ class CropModule(BaseProjection):
             models.Index(fields=["item", "variable"]),
         ]
 
-    def __str__(self):
-        return f"{self.region.code} - {self.item} - {self.variable} ({self.year})"
-
 
 class AnimalModule(BaseProjection):
     """
@@ -108,9 +108,6 @@ class AnimalModule(BaseProjection):
             models.Index(fields=["item", "variable"]),
         ]
 
-    def __str__(self):
-        return f"{self.region.code} - {self.item} - {self.variable} ({self.year})"
-
 
 class BioenergyModule(BaseProjection):
     """
@@ -141,9 +138,6 @@ class BioenergyModule(BaseProjection):
             models.Index(fields=["item", "variable"]),
         ]
 
-    def __str__(self):
-        return f"{self.region.code} - {self.item} - {self.variable} ({self.year})"
-
 
 class LandCover(BaseProjection):
     """
@@ -168,6 +162,3 @@ class LandCover(BaseProjection):
         indexes = [
             models.Index(fields=["region", "item", "year"]),
         ]
-
-    def __str__(self):
-        return f"{self.region.code} - {self.item} - {self.variable} ({self.year})"
