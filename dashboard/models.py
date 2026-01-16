@@ -5,7 +5,9 @@ from django.contrib.postgres.functions import RandomUUID
 class Region(models.Model):
     """Geographic regions from GLOBIOM model."""
 
-    code = models.CharField(max_length=10, unique=True, help_text="Region code (e.g., ame, anz)")
+    code = models.CharField(
+        max_length=10, unique=True, help_text="Region code (e.g., ame, anz)"
+    )
     name = models.CharField(max_length=100, help_text="Full region name")
 
     class Meta:
@@ -25,7 +27,18 @@ class BaseProjection(models.Model):
 
     # Subclasses must define ItemChoices and VariableChoices
     ItemChoices = None
-    VariableChoices = None
+
+    class VariableChoices(models.TextChoices):
+        AREA = "area", "Harvested Area"
+        PRODUCTION = "prod", "Production"
+        YIELD = "yild", "Yield"
+        CONSUMPTION = "cons", "Total Consumption"
+        FOOD = "food", "Food Consumption"
+        FEED = "feed", "Feed Use"
+        OTHER_USE = "othu", "Other Uses"
+        EXPORTS = "expo", "Exports"
+        IMPORTS = "impo", "Imports"
+        NET_TRADE = "nett", "Net Trade"
 
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     year = models.IntegerField(help_text="Projection year")
@@ -39,8 +52,14 @@ class BaseProjection(models.Model):
         abstract = True
 
     def __str__(self):
-        item_label = self.ItemChoices(self.item).label if self.ItemChoices else self.item
-        variable_label = self.VariableChoices(self.variable).label if self.VariableChoices else self.variable
+        item_label = (
+            self.ItemChoices(self.item).label if self.ItemChoices else self.item
+        )
+        variable_label = (
+            self.VariableChoices(self.variable).label
+            if self.VariableChoices
+            else self.variable
+        )
         return f"{self.region.name} - {item_label} {variable_label} ({self.year})"
 
 
@@ -58,18 +77,6 @@ class CropModule(BaseProjection):
         OILSEEDS = "osd", "Oilseeds"
         VEG_FRUIT_NUTS = "vfn", "Vegetables, Fruits & Nuts"
 
-    class VariableChoices(models.TextChoices):
-        AREA = "area", "Harvested Area"
-        PRODUCTION = "prod", "Production"
-        YIELD = "yild", "Yield"
-        CONSUMPTION = "cons", "Total Consumption"
-        FOOD = "food", "Food Consumption"
-        FEED = "feed", "Feed Use"
-        OTHER_USE = "othu", "Other Uses"
-        EXPORTS = "expo", "Exports"
-        IMPORTS = "impo", "Imports"
-        NET_TRADE = "nett", "Net Trade"
-
     class Meta:
         verbose_name = "Crop Module Projection"
         verbose_name_plural = "Crop Module Projections"
@@ -84,7 +91,20 @@ class CropModule(BaseProjection):
                 name="cropmodule_valid_item",
             ),
             models.CheckConstraint(
-                condition=models.Q(variable__in=["area", "prod", "yild", "cons", "food", "feed", "othu", "expo", "impo", "nett"]),
+                condition=models.Q(
+                    variable__in=[
+                        "area",
+                        "prod",
+                        "yild",
+                        "cons",
+                        "food",
+                        "feed",
+                        "othu",
+                        "expo",
+                        "impo",
+                        "nett",
+                    ]
+                ),
                 name="cropmodule_valid_variable",
             ),
         ]
@@ -102,17 +122,6 @@ class AnimalModule(BaseProjection):
         DAIRY = "dry", "Dairy"
         GRASSLAND = "grs", "Grassland (Grazing)"
 
-    class VariableChoices(models.TextChoices):
-        AREA = "area", "Grazing Area"  # Only for grs
-        PRODUCTION = "prod", "Production"
-        YIELD = "yild", "Yield"  # Only for dry
-        CONSUMPTION = "cons", "Total Consumption"
-        FOOD = "food", "Food Consumption"
-        OTHER_USE = "othu", "Other Uses"
-        EXPORTS = "expo", "Exports"
-        IMPORTS = "impo", "Imports"
-        NET_TRADE = "nett", "Net Trade"
-
     class Meta:
         verbose_name = "Animal Module Projection"
         verbose_name_plural = "Animal Module Projections"
@@ -127,7 +136,19 @@ class AnimalModule(BaseProjection):
                 name="animalmodule_valid_item",
             ),
             models.CheckConstraint(
-                condition=models.Q(variable__in=["area", "prod", "yild", "cons", "food", "othu", "expo", "impo", "nett"]),
+                condition=models.Q(
+                    variable__in=[
+                        "area",
+                        "prod",
+                        "yild",
+                        "cons",
+                        "food",
+                        "othu",
+                        "expo",
+                        "impo",
+                        "nett",
+                    ]
+                ),
                 name="animalmodule_valid_variable",
             ),
         ]
@@ -143,16 +164,6 @@ class BioenergyModule(BaseProjection):
         SUGARCANE = "sgc", "Sugarcane"
         PLANT_FIBER = "pfb", "Plant-Based Fiber"
 
-    class VariableChoices(models.TextChoices):
-        AREA = "area", "Harvested Area"
-        PRODUCTION = "prod", "Production"
-        YIELD = "yild", "Yield"
-        CONSUMPTION = "cons", "Total Consumption"
-        OTHER_USE = "othu", "Other Uses"
-        EXPORTS = "expo", "Exports"
-        IMPORTS = "impo", "Imports"
-        NET_TRADE = "nett", "Net Trade"
-
     class Meta:
         verbose_name = "Bioenergy Module Projection"
         verbose_name_plural = "Bioenergy Module Projections"
@@ -167,7 +178,18 @@ class BioenergyModule(BaseProjection):
                 name="bioenergymodule_valid_item",
             ),
             models.CheckConstraint(
-                condition=models.Q(variable__in=["area", "prod", "yild", "cons", "othu", "expo", "impo", "nett"]),
+                condition=models.Q(
+                    variable__in=[
+                        "area",
+                        "prod",
+                        "yild",
+                        "cons",
+                        "othu",
+                        "expo",
+                        "impo",
+                        "nett",
+                    ]
+                ),
                 name="bioenergymodule_valid_variable",
             ),
         ]
