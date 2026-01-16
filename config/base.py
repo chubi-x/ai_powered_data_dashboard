@@ -139,6 +139,16 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Leaflet map configuration
+LEAFLET_CONFIG = {
+    "DEFAULT_CENTER": (48.0, 2.5),  # Center roughly on Europe
+    "DEFAULT_ZOOM": 4,  # Continental view
+    "MAX_ZOOM": 18,
+    "MIN_ZOOM": 3,
+    "MAX_BOUNDS": [[24.4967, -55.5136], [72.1251, 60.9972]],  # Raster bounds
+    "RESET_VIEW": False,
+}
+
 # Raster/TiTiler settings
 TITILER_URL = os.getenv("TITILER_URL", "http://titiler")
 TITILER_EXTERNAL_URL = os.getenv("TITILER_EXTERNAL_URL", "http://localhost:8080")
