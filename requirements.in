@@ -6,3 +6,5 @@ ipython
 python-dotenv
 plotly
 django-debug-toolbar
+factory_boy
+faker

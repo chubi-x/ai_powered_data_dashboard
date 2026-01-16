@@ -138,3 +138,8 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Raster/TiTiler settings
+TITILER_URL = os.getenv("TITILER_URL", "http://titiler")
+TITILER_EXTERNAL_URL = os.getenv("TITILER_EXTERNAL_URL", "http://localhost:8080")
+RASTER_FILE = os.getenv("RASTER_FILE", "raster_web_mercator.tif")
