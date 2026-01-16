@@ -1,0 +1,49 @@
+{% load static tailwind_tags %}
+{% load static tailwind_tags %}
+{% load leaflet_tags %}
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+<head>
+    <title>Ai Powered Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+{% leaflet_js %} 
+{% leaflet_css %} 
+{% tailwind_css %}
+</head>
+
+<body class="leading-normal tracking-normal h-dvh">
+  <div class="flex h-full">
+    <div class="w-[40%]">
+      {% leaflet_map "map" %}
+    </div>
+    <div class="w-[60%] flex grow flex-col items-center p-6">
+      <h1 class="text-2xl font-bold mx-auto my-4">AI Dashboard</h1>
+      <div class="w-full flex flex-col h-full"> 
+        {% include "headline_stats.html" %}
+
+<!-- name of each tab group should be unique -->
+<div class="tabs tabs-lift mt-10 grow">
+  <input type="radio" name="my_tabs_3" class="tab" aria-label="Crop" />
+  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 1</div>
+
+  <input type="radio" name="my_tabs_3" class="tab" aria-label="Animal" checked="checked" />
+  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
+
+  <input type="radio" name="my_tabs_3" class="tab" aria-label="Bio Energy" />
+  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 3</div>
+
+  <input type="radio" name="my_tabs_3" class="tab" aria-label="Forest" />
+  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 3</div>
+</div>
+
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

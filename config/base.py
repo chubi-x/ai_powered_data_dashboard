@@ -37,6 +37,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dskfv6b&!i1g81-fe*(esd6ql7
 ALLOWED_HOSTS = []
 
 
+TAILWIND_APP_NAME = "dashboard"
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "tailwind",
     # Project apps
     "dashboard",
     "raster",
@@ -133,6 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
