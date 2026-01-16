@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.functions import RandomUUID
 
 
 class Region(models.Model):
@@ -32,6 +33,7 @@ class BaseProjection(models.Model):
     unit = models.CharField(max_length=20, choices=UnitChoices.choices)
     item = models.CharField(max_length=10, help_text="Item type")
     variable = models.CharField(max_length=10, help_text="Variable type")
+    uuid = models.UUIDField(db_default=RandomUUID(), editable=False, db_index=True)
 
     class Meta:
         abstract = True

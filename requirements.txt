@@ -17,6 +17,12 @@ django-extensions==4.1
     # via -r requirements.in
 executing==2.2.1
     # via stack-data
+factory-boy==3.3.3
+    # via -r requirements.in
+faker==40.1.2
+    # via
+    #   -r requirements.in
+    #   factory-boy
 ipython==9.9.0
     # via -r requirements.in
 ipython-pygments-lexers==1.1.1

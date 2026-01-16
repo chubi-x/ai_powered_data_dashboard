@@ -71,11 +71,16 @@ python manage.py ingest_csv
 
 ### Raster Setup
 
-The raster file is served directly from S3 via TiTiler - no download needed.
+The raster file is served locally from `raster_data/raster_web_mercator.tif` via TiTiler.
+
+**Background**: The original raster was obtained from an IIASA S3 bucket in EPSG:3035 (European Lambert Azimuthal Equal-Area projection). TiTiler could not reproject it on-the-fly, so it was manually reprojected to EPSG:3857 (Web Mercator) using GDAL:
+
+```bash
+gdalwarp -t_srs EPSG:3857 original.tif raster_web_mercator.tif
+```
 
 Access tiles via TiTiler:
-- Tile URL: `http://localhost:8080/cog/tiles/{z}/{x}/{y}?url=https://s3.iiasa.ac.at/accelerator-prod/demo/Demo/sample.tif`
-- Preview: `http://localhost:8080/cog/viewer?url=https://s3.iiasa.ac.at/accelerator-prod/demo/Demo/sample.tif`
+- Tile URL: `http://localhost:8080/cog/tiles/{z}/{x}/{y}?url=/data/raster_web_mercator.tif`
 - API docs: http://localhost:8080/docs
 
 ## Data Model Architecture
@@ -210,5 +215,6 @@ Mappings sourced from [GLOBIOM Documentation (IIASA)](https://pure.iiasa.ac.at/i
 | `POSTGRES_HOST` | Database host | `localhost` |
 | `POSTGRES_PORT` | Database port | `5432` |
 | `GEMINI_API_KEY` | Google Gemini API key | - |
-| `TITILER_URL` | TiTiler base URL | `http://localhost:8080` |
-| `RASTER_URL` | Raster file URL (S3) | `https://s3.iiasa.ac.at/...` |
+| `TITILER_URL` | TiTiler internal URL (for Django) | `http://titiler` |
+| `TITILER_EXTERNAL_URL` | TiTiler external URL (for browser) | `http://localhost:8080` |
+| `RASTER_FILE` | Raster filename in /data volume | `raster_web_mercator.tif` |
