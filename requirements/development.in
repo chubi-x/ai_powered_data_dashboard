@@ -3,4 +3,5 @@ django-debug-toolbar
 cookiecutter
 honcho
 reload
+debugpy
 django-browser-reload
