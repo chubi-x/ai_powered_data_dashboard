@@ -10,8 +10,11 @@ django==6.0.1
     # via
     #   -r requirements/base.in
     #   django-extensions
+    #   django-leaflet
     #   django-tailwind
 django-extensions==4.1
+    # via -r requirements/base.in
+django-leaflet==0.33.0
     # via -r requirements/base.in
 django-tailwind==4.4.2
     # via -r requirements/base.in
