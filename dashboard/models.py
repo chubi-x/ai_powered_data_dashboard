@@ -20,6 +20,20 @@ class Region(models.Model):
 class BaseProjection(models.Model):
     """Abstract base model for all projection data."""
 
+    VARIABLE_UNIT_MAPPING = {
+        "area": "ha",
+        "prod": "t",
+        "yild": "t/ha",
+        "cons": "t",
+        "food": "t",
+        "feed": "t",
+        "othu": "t",
+        "expo": "t",
+        "impo": "t",
+        "nett": "t",
+        "land": "ha",
+    }
+
     class UnitChoices(models.TextChoices):
         HECTARES = "ha", "Hectares"
         TONNES = "t", "Tonnes"
