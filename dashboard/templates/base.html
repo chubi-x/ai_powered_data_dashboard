@@ -27,28 +27,9 @@
       <h1 class="text-3xl font-bold mx-auto my-3">AI Powered Dashboard</h1>
       <div class="w-full flex flex-col h-full"> 
         {% include "headline_stats.html" %}
-<div class="flex w-full flex-col">
-<div class="dropdown mt-5">
-  <div tabindex="0" role="button" class="btn m-1">Click</div>
-    <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-      <li><a hx-get="{% url 'dashboard:get_timeseries_chart'%}" hx-target="#timeseriesChart" hx-swap="innerHTML" >Item 1</a></li>
-      <li><a>Item 2</a></li>
-    </ul>
-
-    <div class="charts-container mt-5">
-      <h1 class="text-xl font-bold"> Timeseries of Yield across time</h1>
-    </div>
-    <div class="charts w-full flex">
-
-    <div id="timeseriesChart" class="w-full"  hx-trigger="load" hx-get="{% url 'dashboard:get_timeseries_chart'%}" hx-target="#timeseriesChart" hx-swap="innerHTML" >
-    </div>
-
-    <div id="pieChart" class="w-full"  hx-trigger="load" hx-get="{% url 'dashboard:get_pie_chart'%}" hx-target="#pieChart" hx-swap="innerHTML" >
-    </div>
-
-    </div>
-</div>
-
+    <div class="flex w-full flex-col my-10">
+      {% include 'includes/module_filters.html' with default_module=modules.0.name %}
+    {% include "includes/chart.html" with metric=modules.0.filters.1.values.0.label %}
 </div>
 
     </div>
