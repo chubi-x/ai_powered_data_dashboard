@@ -7,3 +7,4 @@ django-extensions
 ipython
 python-dotenv
 plotly
+django-htmx

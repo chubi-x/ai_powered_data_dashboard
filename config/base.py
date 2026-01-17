@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "debug_toolbar",
+    "django_htmx",
     "tailwind",
     "leaflet",
     # Project apps
