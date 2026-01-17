@@ -1,5 +1,6 @@
 {% load static tailwind_tags %}
 {% load leaflet_tags %}
+{% load django_htmx %}
 <!DOCTYPE html>
 <html lang="en" data-theme="cupcake">
 <head>
@@ -10,12 +11,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+ <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>
 {% leaflet_js %} 
 {% leaflet_css %} 
 {% tailwind_css %}
+{% htmx_script %}
 </head>
 
-<body class="leading-normal tracking-normal h-dvh">
+<body class="leading-normal tracking-normal h-dvh" hx-headers='{"x-csrftoken":"{{csrf_token}}"}'>
   <div class="flex h-full">
     <div class="w-[40%]">
       {% leaflet_map "map" %}
@@ -24,24 +27,30 @@
       <h1 class="text-3xl font-bold mx-auto my-3">AI Powered Dashboard</h1>
       <div class="w-full flex flex-col h-full"> 
         {% include "headline_stats.html" %}
+<div class="flex w-full flex-col">
+<div class="dropdown mt-5">
+  <div tabindex="0" role="button" class="btn m-1">Click</div>
+    <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+      <li><a hx-get="{% url 'dashboard:get_timeseries_chart'%}" hx-target="#timeseriesChart" hx-swap="innerHTML" >Item 1</a></li>
+      <li><a>Item 2</a></li>
+    </ul>
 
-<!-- name of each tab group should be unique -->
-<div class="tabs tabs-lift mt-10 grow">
-  <input type="radio" name="my_tabs_3" class="tab" aria-label="Crop" />
-  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 1</div>
+    <div class="charts-container mt-5">
+      <h1 class="text-xl font-bold"> Timeseries of Yield across time</h1>
+    </div>
+    <div class="charts w-full flex">
 
-  <input type="radio" name="my_tabs_3" class="tab" aria-label="Animal" checked="checked" />
-  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
+    <div id="timeseriesChart" class="w-full"  hx-trigger="load" hx-get="{% url 'dashboard:get_timeseries_chart'%}" hx-target="#timeseriesChart" hx-swap="innerHTML" >
+    </div>
 
-  <input type="radio" name="my_tabs_3" class="tab" aria-label="Bio Energy" />
-  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 3</div>
+    <div id="pieChart" class="w-full"  hx-trigger="load" hx-get="{% url 'dashboard:get_pie_chart'%}" hx-target="#pieChart" hx-swap="innerHTML" >
+    </div>
 
-  <input type="radio" name="my_tabs_3" class="tab" aria-label="Forest" />
-  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 3</div>
+    </div>
 </div>
 
+</div>
 
-      </div>
     </div>
   </div>
 </body>
