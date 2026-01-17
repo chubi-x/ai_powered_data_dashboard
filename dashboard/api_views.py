@@ -39,10 +39,9 @@ def regions_list(request):
     return JsonResponse({"regions": list(regions)})
 
 
-@require_GET
-def modules_list(request):
+def modules_list():
     """
-    GET /api/modules/
+    Get modules
 
     Returns all 4 modules with their available items and variables.
     """
