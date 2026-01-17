@@ -1,7 +1,12 @@
-from dashboard.models import BaseProjection
+from django.views.decorators.http import require_GET
+from django.http import HttpResponse
+import pandas as pd
+import plotly.express as px
+import plotly.io as pio
+from dashboard.models import BaseProjection, CropModule
 from dashboard.api_views import MODULE_MAP
 from django.shortcuts import render
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, F
 
 
 def headline_stats():
@@ -19,6 +24,57 @@ def headline_stats():
         for name, model_class in MODULE_MAP.items()
     }
     return totals
+
+
+def _build_timeseries_chart():
+    years = (
+        CropModule.objects.order_by("year").values_list("year", flat=True).distinct()
+    )
+    data = (
+        CropModule.objects.filter(item="wht", variable="nett")
+        .values("year")
+        .annotate(val=Sum("value"))
+        .order_by("year")
+    )
+    timeseries = {
+        year: [item["val"] for item in data if item["year"] == year] for year in years
+    }
+    df = pd.DataFrame.from_dict(data)
+    # df = pd.DataFrame(timeseries)
+
+    # fig = px.line(df, x="year", title="Timeseries of Yield across time")
+    fig = px.line(df, x="year", y="val", log_y=False)
+    fig.update_xaxes(type="category")
+    return pio.to_html(fig, include_plotlyjs=False, full_html=False)
+
+
+def _build_pie_chart():
+    data = (
+        CropModule.objects.filter(variable="yild")
+        .values("item")
+        .annotate(val=Sum("value"))
+        .values("item", "val")
+    )
+    data = [
+        {"item": CropModule.ItemChoices(row["item"]).label, "value": row["val"]}
+        for row in data
+    ]
+    df = pd.DataFrame.from_dict(data)
+
+    fig = px.pie(df, values="value", names="item")
+    return pio.to_html(fig, include_plotlyjs=False, full_html=False)
+
+
+@require_GET
+def pie_chart(request):
+    chart = _build_pie_chart()
+    return HttpResponse(chart)
+
+
+@require_GET
+def timeseries_chart(request):
+    chart = _build_timeseries_chart()
+    return HttpResponse(chart)
 
 
 def index(request):
@@ -39,5 +95,8 @@ def index(request):
             BaseProjection.VARIABLE_UNIT_MAPPING.get(sum_key),
         )
 
-    context = {"headline_stats": sums.items()}
+    context = {
+        "headline_stats": sums.items(),
+        # "initial_chart": build_timeseries_chart(),
+    }
     return render(request, "base.html", context=context)
