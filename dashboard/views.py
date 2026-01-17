@@ -1,9 +1,12 @@
+from typing import override
+from django.db.models.expressions import Value
+from django.views.generic import TemplateView
 from django.views.decorators.http import require_GET
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
-from dashboard.models import BaseProjection, CropModule
+from dashboard.models import BaseProjection, CropModule, Region
 from dashboard.api_views import MODULE_MAP
 from django.shortcuts import render
 from django.db.models import Q, Sum, F
@@ -65,10 +68,101 @@ def _build_pie_chart():
     return pio.to_html(fig, include_plotlyjs=False, full_html=False)
 
 
+def modules_list():
+    """
+    Get modules
+
+    Returns all 4 modules with their available items and variables.
+    """
+    modules = []
+
+    for module_name, model_class in MODULE_MAP.items():
+        items = [
+            {"code": choice.value, "label": choice.label}
+            for choice in model_class.ItemChoices
+        ]
+        variables = [
+            {"code": choice.value, "label": choice.label}
+            for choice in model_class.VariableChoices
+        ]
+        modules.append(
+            {
+                "name": module_name,
+                "label": model_class._meta.verbose_name.replace(
+                    " Projection", ""
+                ).replace("Module", ""),
+                "filters": (
+                    {"name": "Item", "values": items},
+                    {"name": "Metric", "values": variables},
+                ),
+            }
+        )
+    return modules
+
+
 @require_GET
 def pie_chart(request):
     chart = _build_pie_chart()
     return HttpResponse(chart)
+
+
+class GetChartsView(TemplateView):
+    template_name = "includes/chart.html"
+
+    def _validate_projections_params(self):
+        """
+        Validate query parameters for the projections endpoint.
+
+        Raises exceptions if params are invalid
+        """
+        module_name = self.request.GET.get("module")
+
+        # Validate module name
+        if module_name not in MODULE_MAP:
+            valid_modules = ", ".join(MODULE_MAP.keys())
+            raise ValueError(
+                f"Invalid module: {module_name}. Valid options: {valid_modules}"
+            )
+
+        model_class = MODULE_MAP[module_name]
+
+        # Validate item if provided
+        item = self.request.GET.get("item")
+        if item:
+            valid_items = [choice.value for choice in model_class.ItemChoices]
+            if item not in valid_items:
+                raise ValueError(
+                    f"Invalid item: {item}. Valid options for {module_name}: {', '.join(valid_items)}"
+                )
+
+        # Validate variable if provided
+        metric = self.request.GET.get("metric")
+        if metric:
+            _valid_metrics = [choice.value for choice in model_class.VariableChoices]
+            if metric not in _valid_metrics:
+                raise ValueError(
+                    f"Invalid variable: {metric}. Valid options for {module_name}: {', '.join(_valid_metrics)}"
+                )
+
+        # Validate region if provided
+        region = self.request.GET.get("region")
+        if region:
+            if not Region.objects.filter(code=region).exists():
+                raise ValueError(f"Invalid region: {region}")
+
+    @override
+    def get(self, *args, **kwargs):
+        try:
+            self._validate_projections_params()
+        except ValueError as e:
+            return HttpResponseBadRequest(e)
+
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        return context
 
 
 @require_GET
@@ -77,6 +171,7 @@ def timeseries_chart(request):
     return HttpResponse(chart)
 
 
+@require_GET
 def index(request):
     # the stats variable is a list of dictionaries with this shape:
     # {'yild': 9809.408128068997,
@@ -97,6 +192,8 @@ def index(request):
 
     context = {
         "headline_stats": sums.items(),
-        # "initial_chart": build_timeseries_chart(),
+        "modules": modules_list(),
+        "regions": Region.objects.all().values("code", "name"),
     }
+
     return render(request, "base.html", context=context)
