@@ -1,0 +1,24 @@
+<div id="charts" class="w-full flex py-5">
+  <div class="charts-container w-1/2 flex flex-col">
+    <h1 class="text-xl font-bold">{{metric}} Timeseries</h1>
+    <div
+      id="timeseriesChart"
+      class="w-full"
+      hx-trigger="load"
+      hx-get="{% url 'dashboard:get_timeseries_chart'%}"
+      hx-target="#timeseriesChart"
+      hx-swap="innerHTML"
+    ></div>
+  </div>
+  <div class="pie-container flex w-1/2 flex-col">
+    <h1 class="text-xl font-bold">{{metric}} Piechart</h1>
+    <div
+      id="pieChart"
+      class="w-full"
+      hx-trigger="load"
+      hx-get="{% url 'dashboard:get_pie_chart'%}"
+      hx-target="#pieChart"
+      hx-swap="innerHTML"
+    ></div>
+  </div>
+</div>
