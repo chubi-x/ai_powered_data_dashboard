@@ -64,6 +64,7 @@ class BaseProjection(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ["year"]
 
     def __str__(self):
         item_label = (
@@ -94,7 +95,6 @@ class CropModule(BaseProjection):
     class Meta:
         verbose_name = "Crop Module Projection"
         verbose_name_plural = "Crop Module Projections"
-        ordering = ["region", "item", "variable", "year"]
         indexes = [
             models.Index(fields=["region", "item", "year"]),
             models.Index(fields=["item", "variable"]),
@@ -139,7 +139,6 @@ class AnimalModule(BaseProjection):
     class Meta:
         verbose_name = "Animal Module Projection"
         verbose_name_plural = "Animal Module Projections"
-        ordering = ["region", "item", "variable", "year"]
         indexes = [
             models.Index(fields=["region", "item", "year"]),
             models.Index(fields=["item", "variable"]),
@@ -181,7 +180,6 @@ class BioenergyModule(BaseProjection):
     class Meta:
         verbose_name = "Bioenergy Module Projection"
         verbose_name_plural = "Bioenergy Module Projections"
-        ordering = ["region", "item", "variable", "year"]
         indexes = [
             models.Index(fields=["region", "item", "year"]),
             models.Index(fields=["item", "variable"]),
@@ -228,7 +226,6 @@ class LandCover(BaseProjection):
     class Meta:
         verbose_name = "Land Cover Projection"
         verbose_name_plural = "Land Cover Projections"
-        ordering = ["region", "item", "year"]
         indexes = [
             models.Index(fields=["region", "item", "year"]),
         ]
