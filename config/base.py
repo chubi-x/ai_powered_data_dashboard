@@ -160,7 +160,6 @@ LEAFLET_CONFIG = {
 
 # Raster/TiTiler settings
 TITILER_URL = os.getenv("TITILER_URL", "http://titiler")
-TITILER_EXTERNAL_URL = os.getenv("TITILER_EXTERNAL_URL", "http://localhost:8080")
 RASTER_FILE = os.getenv("RASTER_FILE", "raster_web_mercator.tif")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-embedding-1.0")
 GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY", None)

@@ -17,9 +17,7 @@ def get_tile_json(request):
         response = json.loads(response.content.decode("utf8"))
         tiles = response["tiles"]
         url = tiles[0]
-        url = url.replace(
-            "http://localhost:8080/cog/tiles/WebMercatorQuad", "/raster/tiles"
-        )
+        url = url.replace(titiler_url + "/cog/tiles/WebMercatorQuad", "raster/tiles")
         response["tiles"] = [url]
         return JsonResponse(response)
 
