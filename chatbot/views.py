@@ -1,3 +1,4 @@
+import logging
 from dashboard.views import MODULE_MAP
 from django.http import HttpResponse
 from django.views.generic import TemplateView
@@ -134,7 +135,7 @@ class AskAiView(TemplateView):
                     "I processed the data but couldn't generate a text summary."
                 )
         except Exception as e:
-            print(f"AI Error: {e}")
+            logging.error(f"AI Error: {e}")
             return HttpResponse(
                 "<span class='text-red-500'>Error processing request. Please try again.</span>"
             )
