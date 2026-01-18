@@ -21,6 +21,7 @@ A Django-based data dashboard featuring agricultural projections visualization, 
 ### Quick Start (Docker)
 
 1. Clone the repository and copy environment file:
+
    ```bash
    cp .env.example .env
    ```
@@ -28,6 +29,7 @@ A Django-based data dashboard featuring agricultural projections visualization, 
 2. Edit `.env` with your values (especially `GEMINI_API_KEY`)
 
 3. Start the services:
+
    ```bash
    docker compose up
    ```
@@ -39,6 +41,7 @@ A Django-based data dashboard featuring agricultural projections visualization, 
 ### Local Development (without Docker)
 
 1. Create virtual environment and install dependencies:
+
    ```bash
    uv venv
    source .venv/bin/activate
@@ -46,12 +49,14 @@ A Django-based data dashboard featuring agricultural projections visualization, 
    ```
 
 2. Copy environment file and configure:
+
    ```bash
    cp .env.example .env
    # Edit .env - set POSTGRES_HOST=localhost
    ```
 
 3. Start PostgreSQL (via Docker or locally):
+
    ```bash
    docker compose up db
    ```
@@ -65,6 +70,7 @@ A Django-based data dashboard featuring agricultural projections visualization, 
 ### Loading Data
 
 Load the CSV data into the database:
+
 ```bash
 python manage.py ingest_csv
 ```
@@ -80,6 +86,7 @@ gdalwarp -t_srs EPSG:3857 original.tif raster_web_mercator.tif
 ```
 
 Access tiles via TiTiler:
+
 - Tile URL: `http://localhost:8080/cog/tiles/{z}/{x}/{y}?url=/data/raster_web_mercator.tif`
 - API docs: http://localhost:8080/docs
 
@@ -104,7 +111,7 @@ The data model was designed by cross-referencing official GLOBIOM documentation:
 BaseProjection (abstract)
 ├── region (FK)     → Region model
 ├── year            → Projection year (2000-2040)
-├── value           → Projected value (normalized)
+├── value           → Projected value
 ├── unit            → ha | t | t/ha
 ├── item            → Commodity code
 └── variable        → Economic variable
@@ -116,81 +123,66 @@ Concrete Models:
 └── LandCover       → crp, for, grs, nld
 ```
 
-### Data Normalization
-
-The source CSV stores area and mass values in scaled units (`1000 ha`, `1000 t`) to keep numbers manageable. During ingestion, we **normalize these values** to their actual units:
-
-| Source Unit | Stored Unit | Transformation |
-|-------------|-------------|----------------|
-| `1000 ha` | `ha` | value × 1000 |
-| `1000 t` | `t` | value × 1000 |
-| `t/ha` | `t/ha` | unchanged |
-
-**Why normalize?**
-- **Intuitive queries**: `SELECT SUM(value)` returns real hectares/tonnes without mental math
-- **PostgreSQL handles it**: Largest normalized value (~4.2 billion) fits easily in `DOUBLE PRECISION` (15 digit precision) or `BIGINT` (max 9.2 quintillion)
-- **Cleaner API responses**: Frontend receives actual values, simplifying chart/display logic
-
 ### Item Code Mappings
 
-| Code | Description | Module |
-|------|-------------|--------|
-| `wht` | Wheat | Crop |
-| `ric` | Rice | Crop |
-| `cgr` | Coarse Grains (corn, millet, sorghum) | Crop |
-| `osd` | Oilseeds (soybean, rapeseed, sunflower, groundnut) | Crop |
-| `vfn` | Vegetables, Fruits & Nuts | Crop |
-| `rum` | Ruminant Meat | Animal |
-| `nrm` | Non-Ruminant Meat & Eggs | Animal |
-| `dry` | Dairy | Animal |
-| `grs` | Grassland (Grazing) | Animal / LandCover |
-| `sgc` | Sugarcane | Bioenergy |
-| `pfb` | Plant-Based Fiber | Bioenergy |
-| `crp` | Cropland | LandCover |
-| `for` | Forest | LandCover |
-| `nld` | Other Natural Land | LandCover |
+| Code  | Description                                        | Module             |
+| ----- | -------------------------------------------------- | ------------------ |
+| `wht` | Wheat                                              | Crop               |
+| `ric` | Rice                                               | Crop               |
+| `cgr` | Coarse Grains (corn, millet, sorghum)              | Crop               |
+| `osd` | Oilseeds (soybean, rapeseed, sunflower, groundnut) | Crop               |
+| `vfn` | Vegetables, Fruits & Nuts                          | Crop               |
+| `rum` | Ruminant Meat                                      | Animal             |
+| `nrm` | Non-Ruminant Meat & Eggs                           | Animal             |
+| `dry` | Dairy                                              | Animal             |
+| `grs` | Grassland (Grazing)                                | Animal / LandCover |
+| `sgc` | Sugarcane                                          | Bioenergy          |
+| `pfb` | Plant-Based Fiber                                  | Bioenergy          |
+| `crp` | Cropland                                           | LandCover          |
+| `for` | Forest                                             | LandCover          |
+| `nld` | Other Natural Land                                 | LandCover          |
 
 ### Variable Code Mappings
 
-| Code | Description | Unit |
-|------|-------------|------|
-| `area` | Harvested/Grazing Area | ha |
-| `prod` | Production | t |
-| `yild` | Yield | t/ha |
-| `cons` | Total Consumption | t |
-| `food` | Food Consumption | t |
-| `feed` | Feed Use | t |
-| `othu` | Other Uses | t |
-| `expo` | Exports | t |
-| `impo` | Imports | t |
-| `nett` | Net Trade | t |
-| `land` | Land Area | ha |
+| Code   | Description            | Unit |
+| ------ | ---------------------- | ---- |
+| `area` | Harvested/Grazing Area | ha   |
+| `prod` | Production             | t    |
+| `yild` | Yield                  | t/ha |
+| `cons` | Total Consumption      | t    |
+| `food` | Food Consumption       | t    |
+| `feed` | Feed Use               | t    |
+| `othu` | Other Uses             | t    |
+| `expo` | Exports                | t    |
+| `impo` | Imports                | t    |
+| `nett` | Net Trade              | t    |
+| `land` | Land Area              | ha   |
 
 ### Region Codes
 
-Mappings sourced from [GLOBIOM Documentation (IIASA)](https://pure.iiasa.ac.at/id/eprint/18996/1/GLOBIOM_Documentation.pdf) and [JRC Deliverable D3.3](https://datam.jrc.ec.europa.eu/datam/perm/file/29fc34fd-4ef1-4d24-afab-81cdb005d397/Deliverable+D3.3.pdf). Codes marked with * are inferred.
+Mappings sourced from [GLOBIOM Documentation (IIASA)](https://pure.iiasa.ac.at/id/eprint/18996/1/GLOBIOM_Documentation.pdf) and [JRC Deliverable D3.3](https://datam.jrc.ec.europa.eu/datam/perm/file/29fc34fd-4ef1-4d24-afab-81cdb005d397/Deliverable+D3.3.pdf). Codes marked with \* are inferred.
 
-| Code | Region | Description |
-|------|--------|-------------|
-| `bra` | Brazil | Brazil |
-| `can` | Canada | Canada |
-| `chn` | China | China |
-| `ind` | India | India |
-| `usa` | United States | United States of America |
-| `fsu` | Former USSR | Russia, Ukraine, Armenia, Azerbaijan, Belarus, Georgia, Kazakhstan, etc. |
-| `sea` | Southeast Asia | Indonesia, Malaysia, Philippines, Thailand, Vietnam, etc. |
-| `ssa` | Sub-Saharan Africa | Congo Basin, Eastern Africa, South Africa, West & Central Africa |
-| `men` | Middle East & North Africa | Middle East, Northern Africa, Turkey |
-| `wld` | World | Global aggregate |
-| `anz`* | Oceania | Australia, New Zealand, Pacific Islands |
-| `eue`* | EU Central/East | Bulgaria, Czech Republic, Hungary, Poland, Romania, Slovakia, Slovenia |
-| `eur`* | Europe | EU aggregate |
-| `nam`* | North America | USA + Canada aggregate |
-| `oam`* | Other Americas | Argentina, Mexico, Rest of Central/South America |
-| `oas`* | Other Asia | Broader Asia aggregate |
-| `osa`* | Rest of South Asia | Afghanistan, Bangladesh, Bhutan, Nepal, Pakistan, Sri Lanka |
-| `sas`* | South Asia | India + Rest of South Asian States |
-| `ame`* | Africa & Middle East | Africa + Middle East aggregate |
+| Code    | Region                     | Description                                                              |
+| ------- | -------------------------- | ------------------------------------------------------------------------ |
+| `bra`   | Brazil                     | Brazil                                                                   |
+| `can`   | Canada                     | Canada                                                                   |
+| `chn`   | China                      | China                                                                    |
+| `ind`   | India                      | India                                                                    |
+| `usa`   | United States              | United States of America                                                 |
+| `fsu`   | Former USSR                | Russia, Ukraine, Armenia, Azerbaijan, Belarus, Georgia, Kazakhstan, etc. |
+| `sea`   | Southeast Asia             | Indonesia, Malaysia, Philippines, Thailand, Vietnam, etc.                |
+| `ssa`   | Sub-Saharan Africa         | Congo Basin, Eastern Africa, South Africa, West & Central Africa         |
+| `men`   | Middle East & North Africa | Middle East, Northern Africa, Turkey                                     |
+| `wld`   | World                      | Global aggregate                                                         |
+| `anz`\* | Oceania                    | Australia, New Zealand, Pacific Islands                                  |
+| `eue`\* | EU Central/East            | Bulgaria, Czech Republic, Hungary, Poland, Romania, Slovakia, Slovenia   |
+| `eur`\* | Europe                     | EU aggregate                                                             |
+| `nam`\* | North America              | USA + Canada aggregate                                                   |
+| `oam`\* | Other Americas             | Argentina, Mexico, Rest of Central/South America                         |
+| `oas`\* | Other Asia                 | Broader Asia aggregate                                                   |
+| `osa`\* | Rest of South Asia         | Afghanistan, Bangladesh, Bhutan, Nepal, Pakistan, Sri Lanka              |
+| `sas`\* | South Asia                 | India + Rest of South Asian States                                       |
+| `ame`\* | Africa & Middle East       | Africa + Middle East aggregate                                           |
 
 ## Project Structure
 
@@ -205,16 +197,17 @@ Mappings sourced from [GLOBIOM Documentation (IIASA)](https://pure.iiasa.ac.at/i
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SECRET_KEY` | Django secret key | (insecure default) |
-| `DJANGO_SETTINGS_MODULE` | Settings module | `config.dev` |
-| `POSTGRES_DB` | Database name | `dashboard` |
-| `POSTGRES_USER` | Database user | `postgres` |
-| `POSTGRES_PASSWORD` | Database password | `postgres` |
-| `POSTGRES_HOST` | Database host | `localhost` |
-| `POSTGRES_PORT` | Database port | `5432` |
-| `GEMINI_API_KEY` | Google Gemini API key | - |
-| `TITILER_URL` | TiTiler internal URL (for Django) | `http://titiler` |
-| `TITILER_EXTERNAL_URL` | TiTiler external URL (for browser) | `http://localhost:8080` |
-| `RASTER_FILE` | Raster filename in /data volume | `raster_web_mercator.tif` |
+| Variable                 | Description                        | Default                   |
+| ------------------------ | ---------------------------------- | ------------------------- |
+| `SECRET_KEY`             | Django secret key                  | (insecure default)        |
+| `DJANGO_SETTINGS_MODULE` | Settings module                    | `config.dev`              |
+| `POSTGRES_DB`            | Database name                      | `dashboard`               |
+| `POSTGRES_USER`          | Database user                      | `postgres`                |
+| `POSTGRES_PASSWORD`      | Database password                  | `postgres`                |
+| `POSTGRES_HOST`          | Database host                      | `localhost`               |
+| `POSTGRES_PORT`          | Database port                      | `5432`                    |
+| `GEMINI_API_KEY`         | Google Gemini API key              | -                         |
+| `GEMINI_API_KEY`         | Google Gemini API key              | -                         |
+| `TITILER_URL`            | TiTiler internal URL (for Django)  | `http://titiler`          |
+| `TITILER_EXTERNAL_URL`   | TiTiler external URL (for browser) | `http://localhost:8080`   |
+| `RASTER_FILE`            | Raster filename in /data volume    | `raster_web_mercator.tif` |

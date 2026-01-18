@@ -21,7 +21,7 @@
 <body hx-ext="response-targets" class="leading-normal tracking-normal h-dvh" hx-headers='{"x-csrftoken":"{{csrf_token}}"}'>
   <div class="flex h-full">
     <div class="w-[40%]">
-      {% leaflet_map "map" %}
+      <iframe src="/raster/viewer/" width="100%" height="100%" frameborder="0" class="w-full h-full"></iframe>
     </div>
     <div class="w-[60%] flex grow flex-col items-center p-6">
       <h1 class="text-3xl font-bold mx-auto my-3">AI Powered Dashboard</h1>

@@ -9,3 +9,5 @@ django-extensions
 ipython
 python-dotenv
 plotly
+beautifulsoup4
+requests
