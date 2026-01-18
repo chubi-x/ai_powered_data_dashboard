@@ -10,6 +10,27 @@ A Django-based data dashboard featuring agricultural projections visualization, 
 - **Maps**: Leaflet + TiTiler
 - **AI**: Google Gemini via google-genai SDK
 
+## Technology Choices & Rationale
+
+### Data Processing
+- **Django ORM + PostgreSQL**: Mature stack with excellent aggregation support
+- **Alternative considered**: Pandas for in-memory processing (rejected due to memory constraints)
+
+### Dashboard Development  
+- **Django Templates + HTMX + Tailwind**: Server-side rendering with progressive enhancement
+- **Rationale**: Reduces JavaScript complexity, leverages Django's strengths, enables SEO-friendly architecture
+- **Alternatives considered**: React (SPA complexity), Vue.js (additional learning curve)
+
+### Raster File Ingestion and Rendering
+- **TiTiler + GDAL preprocessing**: Cloud-native tile serving with local preprocessing
+- **Rationale**: Handles COG files efficiently, integrates well with Leaflet, supports on-demand tiling
+- **Alternatives considered**: Mapbox/MapLibre (commercial licensing), GeoServer (heavier infrastructure)
+
+### AI/Chatbot Integration
+- **Google Gemini via google-genai SDK**: Latest LLM capabilities with simple API
+- **Rationale**: Strong performance, easy integration, comprehensive documentation
+- **Alternatives considered**: OpenAI GPT (API costs), local models (infrastructure complexity)
+
 ## Development Setup
 
 ### Prerequisites
@@ -100,7 +121,7 @@ Access tiles via TiTiler:
 
 ### Overview
 
-The dashboard visualizes agricultural economic projections from the **AGLINK-COSIMO/GLOBIOM** integrated assessment model. The data covers years 2000-2040 across 19 global regions with 14 commodity types and 11 economic variables.
+The dashboard visualizes agricultural economic projections covering years 2000-2040 across global regions with multiple commodity types and economic variables.
 
 ### Data Sources & Research
 
@@ -194,6 +215,29 @@ Mappings sourced from [GLOBIOM Documentation (IIASA)](https://pure.iiasa.ac.at/i
 | `osa`\* | Rest of South Asia         | Afghanistan, Bangladesh, Bhutan, Nepal, Pakistan, Sri Lanka              |
 | `sas`\* | South Asia                 | India + Rest of South Asian States                                       |
 | `ame`\* | Africa & Middle East       | Africa + Middle East aggregate                                           |
+
+## Methodology & Approach
+
+### End-to-End Data Flow
+
+1. **Data Ingestion**: CSV files → Django management command → PostgreSQL with normalized data structure
+2. **Data Processing**: Real-time aggregation queries for headline stats, HTMX-powered chart generation  
+3. **Frontend Rendering**: Django templates + HTMX for dynamic updates, Plotly.js for charts, Leaflet + TiTiler for maps
+4. **AI Integration**: Google Gemini API for conversational queries about agricultural data
+
+### Key Assumptions
+
+- Data accuracy and completeness for agricultural projections
+- PostgreSQL sufficient for dataset size with complex aggregations
+- HTMX suitable for dashboard interactivity without full SPA framework
+- TiTiler can handle raster files without additional processing
+
+### Trade-offs Considered
+
+- **HTMX vs React**: HTMX chosen for simpler architecture and direct Django integration vs React's richer ecosystem
+- **PostgreSQL vs specialized time-series DB**: PostgreSQL chosen for familiarity vs optimized querying in other databases
+- **Local raster processing vs cloud CDN**: Manual preprocessing chosen for data control vs automatic cloud processing
+- **Single-page dashboard vs multi-page**: Single-page with HTMX chosen for simplicity vs traditional multi-page rendering
 
 ## Headline Stats
 
@@ -338,3 +382,31 @@ dash.chubi.dev {
         }
 }
 ```
+
+## Future Improvements
+
+### Additional Features & Analytics
+- **Advanced Chart Types**: Heat maps, correlation analysis
+- **Data Export**: CSV/PDF export of charts and filtered datasets
+
+### Performance & Scalability
+- **Query Optimization**: Replace serial queries with queryset unions for headline stats
+- **Asset Bundling**: Bundle assets locally instead of using CDNs
+- **Client-side Filtering**: JavaScript chart rebuilding to reduce server requests
+
+### Enhanced AI Capabilities
+- **Conversational Context**: Multi-turn conversations with data context retention
+- **Data Governance**: Private cloud LLM hosting to prevent data leakage
+- **Advanced Queries**: Natural language to SQL translation for complex filters
+
+### UX/UI Improvements
+- **Mobile Responsiveness**: Optimized layouts for tablet and mobile devices
+- **Progressive Loading**: Skeleton screens and lazy loading for better perceived performance
+- **Accessibility**: WCAG compliance, keyboard navigation, screen reader support
+
+### Security, Governance & Monitoring
+- **Unit Tests**: Comprehensive test coverage for critical paths
+- **Error Logging**: Structured logging with alerting for production issues
+- **Security Audit**: Regular dependency updates, security headers, input validation
+- **Monitoring**: Application metrics, performance monitoring, user analytics
+- **Data Privacy**: Audit trails for data access, compliance with data protection regulations
