@@ -153,13 +153,17 @@ class Command(BaseCommand):
                 # Validate item and variable against model's choices
                 if item not in model_class.ItemChoices.values:
                     self.stderr.write(
-                        self.style.WARNING(f"Invalid item '{item}' for {model_class.__name__}, skipping")
+                        self.style.WARNING(
+                            f"Invalid item '{item}' for {model_class.__name__}, skipping"
+                        )
                     )
                     stats["skipped"] += 1
                     continue
                 if variable not in model_class.VariableChoices.values:
                     self.stderr.write(
-                        self.style.WARNING(f"Invalid variable '{variable}' for {model_class.__name__}, skipping")
+                        self.style.WARNING(
+                            f"Invalid variable '{variable}' for {model_class.__name__}, skipping"
+                        )
                     )
                     stats["skipped"] += 1
                     continue
@@ -178,14 +182,6 @@ class Command(BaseCommand):
                 # Normalize value and unit
                 value = float(row["value"])
                 unit = row["unit"]
-
-                if unit == "1000 ha":
-                    value *= 1000
-                    unit = "ha"
-                elif unit == "1000 t":
-                    value *= 1000
-                    unit = "t"
-                # t/ha stays unchanged
 
                 # Create model instance
                 obj = model_class(
