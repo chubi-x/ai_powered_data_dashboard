@@ -2,7 +2,10 @@ from .base import *
 import os
 
 DEBUG = True
-INSTALLED_APPS += ["django_browser_reload"]
+INSTALLED_APPS += [
+    "django_browser_reload",
+    "debug_toolbar",
+]
 
 MIDDLEWARE = [
     "django_browser_reload.middleware.BrowserReloadMiddleware",

@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import tempfile
+
 import os
 from pathlib import Path
 
@@ -37,9 +39,6 @@ SECRET_KEY = os.getenv(
 )
 
 
-ALLOWED_HOSTS = []
-
-
 TAILWIND_APP_NAME = "theme"
 # Application definition
 
@@ -52,7 +51,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
-    "debug_toolbar",
     "tailwind",
     "leaflet",
     # Project apps
@@ -91,7 +89,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
+STATICFILES_DIRS = [BASE_DIR / "static"]
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -143,6 +141,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = "/static_files"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

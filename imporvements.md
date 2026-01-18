@@ -10,3 +10,4 @@
 * error logging
 * rename "variable"" to match metric
 * data governance. use private cloud hosted llm like with civo so proprietary data is not used to train public llms
+* raster url still exposes raster location in the server. should obscure this even more by hooking into leaflet

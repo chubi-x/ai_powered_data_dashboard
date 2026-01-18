@@ -39,6 +39,8 @@ google-auth==2.47.0
     # via google-genai
 google-genai==1.59.0
     # via -r requirements/base.in
+gunicorn==23.0.0
+    # via -r requirements/base.in
 h11==0.16.0
     # via httpcore
 httpcore==1.0.9
@@ -65,7 +67,9 @@ narwhals==2.15.0
 numpy==2.4.1
     # via pandas
 packaging==25.0
-    # via plotly
+    # via
+    #   gunicorn
+    #   plotly
 pandas==2.3.3
     # via -r requirements/base.in
 parso==0.8.5

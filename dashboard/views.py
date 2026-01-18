@@ -236,7 +236,7 @@ class GetChartsView(TemplateView):
                     f["selected"] = True
             try:
                 return model_class.VariableChoices(filter).label
-            except ValueError, AttributeError:
+            except (ValueError, AttributeError):
                 pass
         return module["filters"][index]["values"][0]["label"]
 

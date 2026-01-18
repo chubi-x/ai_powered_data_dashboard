@@ -2,19 +2,20 @@ services:
   web:
     build: .
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:$PORT:$PORT"
     volumes:
       - .:/app
+      - /var/www/ai_dash/static:/static_files
+      - /var/run/ai_dash_django:/var/run/django
     env_file:
       - .env
     environment:
       - POSTGRES_HOST=db
+      - PYTHONPATH=/app
     depends_on:
       db:
         condition: service_healthy
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+    command: ./start-prod.sh
 
   db:
     image: postgres:15-alpine
