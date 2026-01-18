@@ -1,15 +1,14 @@
 # AI-Powered Data Dashboard
 
-A Django-based data dashboard featuring agricultural projections visualization, raster rendering via TiTiler, and an AI chatbot.
+A Django-based data dashboard featuring agricultural projections visualization, interactive charts, and raster map rendering.
 
 ## Tech Stack
 
-- **Backend**: Django 5.x
-- **Database**: PostgreSQL 15
-- **Charts**: Plotly
-- **Raster**: TiTiler + Leaflet
-- **AI**: Google Gemini with function calling
-- **Frontend**: Django Templates + HTMX
+- **Backend**: Django 5.x + PostgreSQL 15
+- **Frontend**: Django Templates + HTMX + Tailwind CSS
+- **Charts**: Plotly.js
+- **Maps**: Leaflet + TiTiler
+- **AI**: Google Gemini via google-genai SDK
 
 ## Development Setup
 
@@ -55,13 +54,20 @@ A Django-based data dashboard featuring agricultural projections visualization, 
    # Edit .env - set POSTGRES_HOST=localhost
    ```
 
-3. Start PostgreSQL (via Docker or locally):
+3. Install and setup django-tailwind:
+
+   ```bash
+   python manage.py tailwind install
+   python manage.py tailwind build
+   ```
+
+4. Start PostgreSQL (via Docker or locally):
 
    ```bash
    docker compose up db
    ```
 
-4. Run migrations and start server:
+5. Run migrations and start server:
    ```bash
    python manage.py migrate
    python manage.py runserver
@@ -111,10 +117,13 @@ The data model was designed by cross-referencing official GLOBIOM documentation:
 BaseProjection (abstract)
 ├── region (FK)     → Region model
 ├── year            → Projection year (2000-2040)
-├── value           → Projected value
+├── value           → Projected value (normalized)
 ├── unit            → ha | t | t/ha
 ├── item            → Commodity code
-└── variable        → Economic variable
+├── variable        → Economic variable
+├── uuid            → UUID for secure external references
+├── AllItemChoices  → All possible items across modules
+└── VARIABLE_UNIT_MAPPING → Unit mapping for data normalization
 
 Concrete Models:
 ├── CropModule      → wht, ric, cgr, osd, vfn
@@ -122,6 +131,8 @@ Concrete Models:
 ├── BioenergyModule → sgc, pfb
 └── LandCover       → crp, for, grs, nld
 ```
+
+### Data Normalization
 
 ### Item Code Mappings
 
@@ -146,7 +157,7 @@ Concrete Models:
 
 | Code   | Description            | Unit |
 | ------ | ---------------------- | ---- |
-| `area` | Harvested/Grazing Area | ha   |
+| `area` | Area                   | ha   |
 | `prod` | Production             | t    |
 | `yild` | Yield                  | t/ha |
 | `cons` | Total Consumption      | t    |
@@ -184,7 +195,47 @@ Mappings sourced from [GLOBIOM Documentation (IIASA)](https://pure.iiasa.ac.at/i
 | `sas`\* | South Asia                 | India + Rest of South Asian States                                       |
 | `ame`\* | Africa & Middle East       | Africa + Middle East aggregate                                           |
 
-## Project Structure
+## Headline Stats
+
+The dashboard displays aggregate statistics across all modules at the top of the page. These include:
+
+- **Yield**: Total yield across all modules (t/ha)
+- **Total Consumption**: Total consumption across all modules (t)
+- **Net Trade**: Net trade balance across all modules (t)
+- **Production**: Total production across all modules (t)
+
+Stats are calculated in real-time by aggregating data across all projection modules and are displayed as cards with formatted numbers and units.
+
+## Chart System
+
+Interactive charts are rendered using Plotly.js and loaded dynamically via HTMX. The system includes:
+
+### Chart Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/charts/` | GET | Returns chart interface for selected module |
+| `/charts/timeseries` | GET | Returns HTML for time series chart |
+| `/charts/pie` | GET | Returns HTML for pie/bar chart |
+
+### Query Parameters
+
+All chart endpoints accept:
+- `module`: crop, animal, bioenergy, landcover
+- `metric`: Variable to chart (area, prod, yild, cons, etc.)
+- `item`: Filter by item (all for no filter)
+- `region`: Filter by region (all for no filter)
+
+### Filter-Based Chart Interface
+
+The dashboard features a dynamic chart interface with dropdown selectors for filtering data:
+
+- **Module Selector**: Choose from crop, animal, bioenergy, or landcover modules
+- **Item Selector**: Filter by specific commodities within the selected module (e.g., wheat, rice for crop module)
+- **Variable Selector**: Select economic variables (e.g., area, production, yield, consumption)
+- **Region Selector**: Filter by geographic regions (e.g., USA, China, Europe)
+
+All filters update charts dynamically via HTMX without page refreshes, providing real-time data visualization across different combinations of filters.
 
 ```
 ├── config/          # Django settings (base, dev, production)
@@ -207,7 +258,83 @@ Mappings sourced from [GLOBIOM Documentation (IIASA)](https://pure.iiasa.ac.at/i
 | `POSTGRES_HOST`          | Database host                      | `localhost`               |
 | `POSTGRES_PORT`          | Database port                      | `5432`                    |
 | `GEMINI_API_KEY`         | Google Gemini API key              | -                         |
-| `GEMINI_API_KEY`         | Google Gemini API key              | -                         |
 | `TITILER_URL`            | TiTiler internal URL (for Django)  | `http://titiler`          |
 | `TITILER_EXTERNAL_URL`   | TiTiler external URL (for browser) | `http://localhost:8080`   |
 | `RASTER_FILE`            | Raster filename in /data volume    | `raster_web_mercator.tif` |
+
+## Production Deployment
+
+### Docker Compose Setup
+
+The application is containerized and ready for production deployment using Docker Compose:
+
+1. **Environment Configuration**:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with production values:
+   # - DJANGO_SETTINGS_MODULE=config.production
+   # - Set secure SECRET_KEY
+   # - Configure PostgreSQL credentials
+   # - Set GEMINI_API_KEY
+   # - Set ALLOWED_HOSTS in config/production.py
+   ```
+
+2. **Build and Deploy**:
+
+   ```bash
+   # Build the application
+   docker compose build
+
+   # Start services
+   docker compose up -d
+   ```
+
+3. **Database Setup**:
+
+   ```bash
+   # Run migrations (handled automatically by start-prod.sh)
+   docker compose exec web django-admin migrate
+
+   # Load data
+   docker compose exec web django-admin ingest_csv
+   ```
+
+### Production Services
+
+- **Django (web)**: Runs with Gunicorn behind Caddy (via socket)
+- **PostgreSQL (db)**: Persistent data storage with health checks
+- **TiTiler**: Raster tile serving for Leaflet maps
+
+### Security Considerations
+
+- HTTPS should be configured at the reverse proxy level
+- Database credentials should use strong passwords
+- `SECRET_KEY` must be unique and secure
+- `ALLOWED_HOSTS` configured in production settings
+- Static files served via Caddy from `/var/www/ai_dash/static`
+
+### Caddy Configuration
+
+Caddy serves as the reverse proxy and handles SSL termination. Example Caddyfile:
+
+```caddyfile
+dash.chubi.dev {
+        encode gzip
+        handle {
+                reverse_proxy unix//var/run/ai_dash_django/dash.sock {
+                        header_up Host {host}
+                        header_up X-Real-IP {remote_host}
+                        header_up X-Forwarded-For {remote_host}
+                        header_up X-Forwarded-Proto {scheme}
+                }
+        }
+        handle_path /static/* {
+                root * /var/www/ai_dash/static
+                file_server
+        }
+        log {
+                output file /var/log/caddy/access.log
+        }
+}
+```
