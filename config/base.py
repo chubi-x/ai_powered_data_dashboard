@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Django Shell Plus for IPython configuration
 try:
     import IPython
+
     SHELL_PLUS = "ipython"
 except ImportError:
     SHELL_PLUS = "plain"
@@ -31,12 +32,15 @@ except ImportError:
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dskfv6b&!i1g81-fe*(esd6ql7y1&qc_yv1(=7_x)^kwz*^wm9")
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-dskfv6b&!i1g81-fe*(esd6ql7y1&qc_yv1(=7_x)^kwz*^wm9"
+)
 
 
 ALLOWED_HOSTS = []
 
 
+TAILWIND_APP_NAME = "theme"
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,8 +51,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "debug_toolbar",
+    "tailwind",
+    "leaflet",
     # Project apps
     "dashboard",
+    "theme",
     "raster",
     "chatbot",
 ]
@@ -133,11 +142,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Leaflet map configuration
+LEAFLET_CONFIG = {
+    "DEFAULT_CENTER": (48.0, 2.5),  # Center roughly on Europe
+    "DEFAULT_ZOOM": 4,  # Continental view
+    "MAX_ZOOM": 18,
+    "MIN_ZOOM": 3,
+    "MAX_BOUNDS": [[24.4967, -55.5136], [72.1251, 60.9972]],  # Raster bounds
+    "RESET_VIEW": False,
+}
 
 # Raster/TiTiler settings
 TITILER_URL = os.getenv("TITILER_URL", "http://titiler")

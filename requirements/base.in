@@ -1,10 +1,9 @@
-django>=5.0
+django>=6.0
 pandas
 psycopg2-binary
+django-leaflet
+django-tailwind
 django-extensions
 ipython
 python-dotenv
 plotly
-django-debug-toolbar
-factory_boy
-faker

@@ -1,0 +1,2 @@
+django: python -Xfrozen_modules=off -m debugpy --listen 127.0.0.1:7777 manage.py runserver
+tailwind: python manage.py tailwind start

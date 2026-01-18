@@ -1,0 +1,62 @@
+<div id="charts">
+<div class="filters-container" hx-target-400="#bad-errors" 
+  hx-target="#charts" hx-trigger="change" hx-swap="innerHTML">
+      <div class="module-filter my-3">
+        <label class="select w-full">
+          <span class="label"> Module </span>
+        <select name="module" hx-get="{% url 'dashboard:get_charts'%}" class="select" hx-include=".module-filter">
+  
+          {% for m in modules %}
+            <option value="{{ m.name }}" {% if m.name == module.name %} selected {% endif %}>
+              {{m.label}}
+            </option>
+          {% endfor %}
+        </select>
+        </label>
+      </div>
+      <div id="bad-errors" class="my-2 h-5 text-red-500 text-sm" ></div>
+
+
+      <div class="filters flex justify-between">
+                {% for filter in module.filters  %}
+                <label class="select">
+                  <span class="label"> {{filter.name}}  </span>
+                  <select name="{{filter.name |lower}}" class="select"
+                    hx-get="{% url 'dashboard:get_charts'%}" 
+                    hx-include=".module-filter, .filters select">
+                    
+                  {% for filter_name in filter.values %}
+                    <option {% if filter_name.selected %} selected {%endif%}   value="{{filter_name.code}}" >{%if filter_name.label %} {{filter_name.label}} {% else %} {{filter_name.name}} {%endif%}</option>
+                {% endfor %}
+                </select>
+                </label>
+                {% endfor %}
+      </div>
+</div>
+<div class="w-full flex py-5">
+  <div class="charts-container w-1/2 flex flex-col">
+    <h1 class="text-xl font-bold">{{metric}} Timeseries</h1>
+    <div
+      id="timeseriesChart"
+      class="w-full"
+      hx-trigger="load"
+      hx-get="{% url 'dashboard:get_timeseries_chart'%}"
+      hx-include=".module-filter, .filters select"
+      hx-target="#timeseriesChart"
+      hx-swap="innerHTML"
+    ></div>
+  </div>
+  <div class="pie-container flex w-1/2 flex-col">
+    <h1 class="text-xl font-bold">{{metric}} Piechart</h1>
+    <div
+      id="pieChart"
+      class="w-full"
+      hx-trigger="load"
+      hx-get="{% url 'dashboard:get_pie_chart'%}"
+      hx-include=".module-filter, .filters select"
+      hx-target="#pieChart"
+      hx-swap="innerHTML"
+    ></div>
+  </div>
+</div>
+</div>
