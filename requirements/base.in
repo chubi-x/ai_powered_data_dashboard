@@ -3,6 +3,8 @@ pandas
 psycopg2-binary
 django-leaflet
 django-tailwind
+google-genai
+markdown
 django-extensions
 ipython
 python-dotenv

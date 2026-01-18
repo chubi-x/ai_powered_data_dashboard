@@ -1,4 +1,5 @@
 from .base import *
+import os
 
 DEBUG = True
 INSTALLED_APPS += ["django_browser_reload"]
@@ -25,3 +26,4 @@ DEBUG_TOOLBAR_PANELS = [
     "debug_toolbar.panels.redirects.RedirectsPanel",
     "debug_toolbar.panels.profiling.ProfilingPanel",
 ]
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", None)

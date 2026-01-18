@@ -2,8 +2,6 @@ from django.urls import path
 
 from . import views
 
-app_name = 'chatbot'
+app_name = "chatbot"
 
-urlpatterns = [
-    path('', views.index, name='index'),
-]
+urlpatterns = [path("api/ask-ai/", views.AskAiView.as_view(), name="ask_ai")]

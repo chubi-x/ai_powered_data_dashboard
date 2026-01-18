@@ -51,7 +51,7 @@ def _modules_list():
                 "filters": [
                     {"name": "Region", "values": all_option + get_regions()},
                     {"name": "Item", "values": all_option + items},
-                    {"name": "Metric", "values": all_option + variables},
+                    {"name": "Metric", "values": variables},
                 ],
             }
         )
