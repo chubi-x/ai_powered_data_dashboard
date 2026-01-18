@@ -106,6 +106,7 @@ pytz==2025.2
     # via pandas
 requests==2.32.5
     # via
+    #   -r requirements/base.in
     #   google-auth
     #   google-genai
 rsa==4.9.1
