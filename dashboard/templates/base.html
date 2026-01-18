@@ -1,6 +1,5 @@
 {% load static tailwind_tags %}
 {% load leaflet_tags %}
-{% load django_htmx %}
 <!DOCTYPE html>
 <html lang="en" data-theme="cupcake">
 <head>
@@ -11,14 +10,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
- <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>
+ <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+<script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>
+<script src="{% static 'js/htmx-ext-response-targets.min.js' %}"></script>
 {% leaflet_js %} 
 {% leaflet_css %} 
 {% tailwind_css %}
-{% htmx_script %}
 </head>
 
-<body class="leading-normal tracking-normal h-dvh" hx-headers='{"x-csrftoken":"{{csrf_token}}"}'>
+<body hx-ext="response-targets" class="leading-normal tracking-normal h-dvh" hx-headers='{"x-csrftoken":"{{csrf_token}}"}'>
   <div class="flex h-full">
     <div class="w-[40%]">
       {% leaflet_map "map" %}
@@ -27,9 +27,8 @@
       <h1 class="text-3xl font-bold mx-auto my-3">AI Powered Dashboard</h1>
       <div class="w-full flex flex-col h-full"> 
         {% include "headline_stats.html" %}
-    <div class="flex w-full flex-col my-10">
-      {% include 'includes/module_filters.html' with default_module=modules.0.name %}
-    {% include "includes/chart.html" with metric=modules.0.filters.1.values.0.label %}
+    <div class="flex w-full flex-col ">
+    {% include "includes/chart.html" with module=default_module metric=default_module.filters.1.values.0.label %}
 </div>
 
     </div>
