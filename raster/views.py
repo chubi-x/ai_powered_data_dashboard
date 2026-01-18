@@ -1,3 +1,4 @@
+import logging
 import json
 import requests
 from django.http import HttpResponse, JsonResponse
@@ -23,6 +24,7 @@ def get_tile_json(request):
         return JsonResponse(response)
 
     except requests.RequestException as e:
+        logging.error(f"Error fetching tile: {e}")
         return HttpResponse(f"Error fetching tile", status=500)
 
 
@@ -41,6 +43,7 @@ def get_tiles(request, z, x, y):
         )
 
     except requests.RequestException as e:
+        logging.error(f"Error fetching tile: {e}")
         return HttpResponse(f"Error fetching tile", status=500)
 
 
@@ -60,4 +63,5 @@ def get_info(request):
         )
 
     except requests.RequestException as e:
+        logging.error(f"Error fetching tile: {e}")
         return HttpResponse(f"Error fetching info", status=500)
