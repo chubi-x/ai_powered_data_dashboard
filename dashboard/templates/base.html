@@ -21,7 +21,34 @@
 <body hx-ext="response-targets" class="leading-normal tracking-normal h-dvh" hx-headers='{"x-csrftoken":"{{csrf_token}}"}'>
   <div class="flex h-full">
     <div class="w-[40%]">
-      <iframe src="/raster/viewer/" width="100%" height="100%" frameborder="0" class="w-full h-full"></iframe>
+      {% leaflet_map "map" %}
+      <script>
+        // Add raster tile layer after map loads
+        document.addEventListener('DOMContentLoaded', function() {
+          if (typeof window.map !== 'undefined') {
+            // Fetch COG info for bounds
+            fetch('/raster/info/')
+              .then(response => response.json())
+              .then(data => {
+                // Add tile layer
+                const tileLayer = L.tileLayer('/raster/tiles/{z}/{x}/{y}/', {
+                  attribution: 'TiTiler COG',
+                  opacity: 0.7
+                }).addTo(window.map);
+
+                // Fit map to bounds if available
+                if (data.bounds) {
+                  const bounds = L.latLngBounds(
+                    [data.bounds[1], data.bounds[0]], // SW
+                    [data.bounds[3], data.bounds[2]]  // NE
+                  );
+                  window.map.fitBounds(bounds);
+                }
+              })
+              .catch(error => console.error('Error loading raster:', error));
+          }
+        });
+      </script>
     </div>
     <div class="w-[60%] flex grow flex-col items-center p-6">
       <h1 class="text-3xl font-bold mx-auto my-3">AI Powered Dashboard</h1>
