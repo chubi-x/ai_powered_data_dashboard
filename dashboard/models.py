@@ -21,18 +21,34 @@ class BaseProjection(models.Model):
     """Abstract base model for all projection data."""
 
     VARIABLE_UNIT_MAPPING = {
-        "area": "ha",
-        "prod": "t",
+        "area": "1000 ha",
+        "prod": "1000 t",
         "yild": "t/ha",
-        "cons": "t",
-        "food": "t",
-        "feed": "t",
-        "othu": "t",
-        "expo": "t",
-        "impo": "t",
-        "nett": "t",
-        "land": "ha",
+        "cons": "1000 t",
+        "food": "1000 t",
+        "feed": "1000 t",
+        "othu": "1000 t",
+        "expo": "1000 t",
+        "impo": "1000 t",
+        "nett": "1000 t",
+        "land": "1000 ha",
     }
+
+    class AllItemChoices(models.TextChoices):
+        WHEAT = "wht", "Wheat"
+        RICE = "ric", "Rice"
+        COARSE_GRAINS = "cgr", "Coarse Grains"
+        OILSEEDS = "osd", "Oilseeds"
+        VEG_FRUIT_NUTS = "vfn", "Vegetables, Fruits & Nuts"
+        RUMINANTS = "rum", "Ruminant Meat"
+        NON_RUMINANTS = "nrm", "Non-Ruminant Meat & Eggs"
+        DAIRY = "dry", "Dairy"
+        SUGARCANE = "sgc", "Sugarcane"
+        PLANT_FIBER = "pfb", "Plant-Based Fiber"
+        CROPLAND = "crp", "Cropland"
+        FOREST = "for", "Forest"
+        GRASSLAND = "grs", "Grassland"
+        NATURAL_LAND = "nld", "Other Natural Land"
 
     class UnitChoices(models.TextChoices):
         HECTARES = "ha", "Hectares"
@@ -43,7 +59,7 @@ class BaseProjection(models.Model):
     ItemChoices = None
 
     class VariableChoices(models.TextChoices):
-        AREA = "area", "Harvested Area"
+        AREA = "area", "Area"
         PRODUCTION = "prod", "Production"
         YIELD = "yild", "Yield"
         CONSUMPTION = "cons", "Total Consumption"
