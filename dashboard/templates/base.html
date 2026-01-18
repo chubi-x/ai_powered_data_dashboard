@@ -29,7 +29,6 @@
             fetch('/raster/json/')
               .then(response => response.json())
               .then(data => {
-                console.log(data)
                 // data.bounds is [minX, minY, maxX, maxY]
                 const b = data.bounds;
                 // Convert to Leaflet bounds: [[southWest_lat, southWest_lng], [northEast_lat, northEast_lng]]
@@ -78,7 +77,7 @@
         <span class="loading loading-dots loading-sm"></span> Thinking...
     </div>
 
-    <div id="ai-response" class="mt-4 prose text-secondary text-sm"></div>
+    <div id="ai-response" class="prose text-sm"></div>
 </div>
   </div>
 </body>
